@@ -4,12 +4,6 @@ let selectedUsers = []
 
 $("#submitPostButton").prop("disabled", true);
 
-$(document).ready(() => {
-    if (results.length == 0) {
-        container.append("<span class='noResults'>Nothing to show.</span>")
-    }
-})
-
 $("#postTextarea, #replyTextarea").keyup(event => {
     const textbox = $(event.target);
     const value = textbox.val().trim();
@@ -407,7 +401,8 @@ function getPostIdFromElement(element) {
 
 
 function createPostHtml(postData, largeFont = false) {
-    let userLoggedIn = JSON.parse(localStorage.getItem("userLoggedIn"))
+    const checkForALoggedInUser = JSON.parse(localStorage.getItem("userLoggedIn"))
+    let userLoggedIn = checkForALoggedInUser != undefined && JSON.parse(localStorage.getItem("userLoggedIn"))
 
     if (postData == null) return alert("Post object is null!");
     const isRetweet = postData.retweetData !== undefined;

@@ -17,7 +17,7 @@ block content
                     if profileUser.coverPhoto 
                         img(src=profileUser.coverPhoto, alt="User's cover photo")
                     if profileUser._id == userLoggedIn._id 
-                        button.coverPhotoButton.uploadCoverPhoto(data-toggle="modal", data-target="#coverPhotoModalLabel")
+                        button.coverPhotoButton.uploadCoverPhoto(data-toggle="modal", data-bs-target="#coverPhotoModalLabel")
                             <i class="fa-solid fa-camera"></i>
 
                 .userImageContainer 
@@ -53,7 +53,7 @@ block content
                         span Followers
 
         .tabsContainer 
-            +createTab("Posts", `/profile/${profileUser.username}`, selectedTab != "replies")
+            +createTab("Posts", `/profile`, selectedTab != "replies")
             +createTab("Replies", `/profile/${profileUser.username}/replies`, selectedTab == "replies")
 
         .pinnedPostContainer
