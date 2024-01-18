@@ -1,0 +1,30 @@
+extends layouts/home-layout.pug
+
+block content
+
+    if errorMessage
+        span.errorMessage #{errorMessage}
+    
+    else 
+        script.
+            const chatId = '!{chat._id}'
+
+        .chatPageContainer 
+            .chatTitleBarContainer 
+                +createChatImage(chat, userLoggedIn)
+                span#chatName(data-bs-toggle="modal", data-bs-target="#chatNameModal")
+
+            .mainContentContainer 
+                .loadingSpinnerContainer 
+                    img(src="/images/loadingSpinner.gif", alt="Loading Spinner")
+                .chatContainer(style="visibility: hidden")
+                    ul.chatMessages
+                    .footer 
+                        textarea.inputTextBox(name="messageInput", rows="1", placeholder="Type a message...") 
+                        button.sendMessageButton 
+                            <i class="fa-regular fa-paper-plane"></i>
+
+        +createChatNameModal(chat)
+
+block scripts 
+    script(src="/js/chatsPage.js") 
