@@ -18,6 +18,7 @@ function loadFollowers() {
 
 function loadFollowing() {
     $.get(`/api/users/${profileUserId}/following`, postData => {
+        console.log(postData)
         outputUsers(postData.following, $(".resultsContainer"))
     })
 }

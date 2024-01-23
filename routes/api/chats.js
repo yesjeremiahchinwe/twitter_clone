@@ -12,6 +12,12 @@ router.get("/", async (req, res) => {
         .populate("latestMessage")
         .sort("-updatedAt")
         .then(async results => {
+
+            if (req.query.unreadOnly !== undefined && req.query.unreadOnly == true) {
+                results = results.filter(message => !message.latestMessage.readBy.includes(req.session.user._id))
+            }
+
+
             results = await UserModel.populate(results, { path: "latestMessage.sender" })
             res.status(200).send(results)
         })

@@ -1,6 +1,5 @@
 const express = require("express")
 const router = express.Router()
-const middleware = require("../middleware/auth")
 const UserModel = require("../model/UserModel")
 
 
@@ -17,7 +16,16 @@ router.get("/", (req, res) => {
 })
 
 router.get("/:username", async (req, res) => {
-    const payload = await getPayload(req.params.username, req.session.user)
+    let user = await UserModel.findOne({ username: req.params.username })
+
+    const payload = {
+        pageTitle: req.session.user.username,
+        userLoggedIn: req.session.user,
+        userLoggedInJS: JSON.stringify(req.session.user),
+        profileUser: user
+    }
+
+    // const payload = await getPayload(req.params.username, req.session.user)
     res.status(200).render("profilePage", payload)
 })
 
@@ -37,13 +45,13 @@ router.get("/:username/following", async (req, res) => {
 
 
 router.get("/:username/followers", async (req, res) => {
-    const payload = await getPayload(req.params.username, req.session.user)
+    let payload = await getPayload(req.params.username, req.session.user)
     payload.selectedTab = "followers"
     res.status(200).render("followersAndFollowing", payload)
 })
 
 
-async function getPayload(username, userLoggedIn) {
+async function getPayload(username, loggedInUSER) {
     let user = await UserModel.findOne({ username: username })
 
     if(user == null) {
@@ -53,16 +61,16 @@ async function getPayload(username, userLoggedIn) {
         if (user == null) {
             return {
                 pageTitle: "User not found",
-                userLoggedIn: userLoggedIn,
-                userLoggedInJs: JSON.stringify(userLoggedIn)
+                userLoggedIn: loggedInUSER,
+                userLoggedInJs: JSON.stringify(loggedInUSER)
             }
         }
     }
 
     return {
         pageTitle: user.username,
-        userLoggedIn: userLoggedIn,
-        userLoggedInJs: JSON.stringify(userLoggedIn),
+        userLoggedIn: loggedInUSER,
+        userLoggedInJs: JSON.stringify(loggedInUSER),
         profileUser: user
     }
 }

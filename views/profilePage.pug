@@ -2,11 +2,11 @@ extends layouts/home-layout.pug
 
 block content
     if !profileUser
-        span.errorMessage User not found
+        span.errorMessage Check the url you are trying to access
     else
         script.
-            const profileUserId = `!{profileUser._id}`;
-            const selectedTab = `!{selectedTab}`;
+            var profileUserId = '!{profileUser._id}'
+            var selectedTab = '!{selectedTab}';
 
         - followerCount = profileUser.followers.length
         - followingCount = profileUser.following.length
@@ -32,7 +32,7 @@ block content
                     a.profileButton(href=`/messages/${profileUser._id}`)
                         i.fa-regular.fa-envelope 
                     
-                    - const profileUserId = profileUser._id.toString()
+                    - var profileUserId = profileUser._id.toString()
                     - if (userLoggedIn.following && userLoggedIn.following.includes(profileUserId))
                         +createFollowButton(profileUser, true)
                     - else 
@@ -53,7 +53,7 @@ block content
                         span Followers
 
         .tabsContainer 
-            +createTab("Posts", `/profile`, selectedTab != "replies")
+            +createTab("Posts", `/profile/${profileUser.username}`, selectedTab != "replies")
             +createTab("Replies", `/profile/${profileUser.username}/replies`, selectedTab == "replies")
 
         .pinnedPostContainer
@@ -64,4 +64,4 @@ block content
         +createCoverPhotoModal()
 
 block scripts 
-    script(src="/js/profile.js") 
+    script(src="/js/profile.js")

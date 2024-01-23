@@ -1,4 +1,17 @@
+
+let typing = false
+let lastTypingTime
+
 $(document).ready(() => {
+
+    socket.emit("join room", chatId)
+    socket.on("typing", () => {
+        $(".typingDots").show()
+        scrollToBottom(true)
+    })
+    socket.on("stop typing", () => $(".typingDots").hide())
+
+
     $.get(`/api/chats/${chatId}`, (data) => {
         $("#chatName").text(getChatName(data))
     })
@@ -55,11 +68,39 @@ $(".sendMessageButton").click(() => {
 
 $(".inputTextBox").keydown((event) => {
 
+    updateTyping()
+
     if (event.which == 13 && !event.shiftKey) {
         messageSubmitted()
         return false
     }
 })
+
+
+function updateTyping() {
+
+    if (!connected) return
+
+    if (!typing) {
+        typing = true
+        socket.emit("typing", chatId)
+    }
+
+    lastTypingTime = new Date().getTime()
+    const timerLength = 3000
+
+    setTimeout(() => {
+        const timeNow = new Date().getTime()
+        const timeDifference = timeNow - lastTypingTime
+
+        if (timeDifference >= timerLength && typing) {
+            socket.emit("stop typing", chatId)
+            typing = false
+        }
+
+    }, timerLength)
+
+}
 
 
 function messageSubmitted() {
@@ -68,6 +109,8 @@ function messageSubmitted() {
     if (content != "") {
         sendMesage(content)
         $(".inputTextBox").val("")
+        socket.emit("stop typing", chatId)
+        typing = false
     }
 }
 
@@ -82,6 +125,10 @@ function sendMesage(content) {
         }
         
         addChatMessageHtml(data)
+
+        if (connected) {
+            socket.emit("new message", data)
+        }
     })
 }
 
@@ -153,7 +200,8 @@ function scrollToBottom(animated) {
     const scrollHeight = container[0].scrollHeight
 
     if (animated) {
-        container.animate({ scrollTo: scrollHeight }, "slow")
+        // container.animate({ scrollTo: scrollHeight }, "slow")
+        container.scrollTop(scrollHeight)
     } else {
         container.scrollTop(scrollHeight)
     }

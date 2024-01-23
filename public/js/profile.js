@@ -1,8 +1,8 @@
 $(document).ready(() => {
 
-    if (selectedTab === "replies") {
+    console.log(profileUserId)
+    if (selectedTab == "replies") {
         loadReplies()
-
     } else {
         loadPosts();
     }

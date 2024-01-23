@@ -16,11 +16,15 @@ block content
 
             .mainContentContainer 
                 .loadingSpinnerContainer 
-                    img(src="/images/loadingSpinner.gif", alt="Loading Spinner")
+                    img(src="/images/loading_spinner.gif", alt="Loading Spinner")
                 .chatContainer(style="visibility: hidden")
                     ul.chatMessages
+
+                    .typingDots 
+                        img(src="/images/typing_dots.gif", alt="")
+
                     .footer 
-                        textarea.inputTextBox(name="messageInput", rows="1", placeholder="Type a message...") 
+                        textarea.inputTextBox(name="messageInput", rows="1", placeholder="Type a message...")
                         button.sendMessageButton 
                             <i class="fa-regular fa-paper-plane"></i>
 

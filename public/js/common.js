@@ -2,6 +2,12 @@ let cropper;
 let timer;
 let selectedUsers = []
 
+$(document).ready(() => {
+    refreshMessagesBadge()
+    refreshNotificationsBadge()
+})
+
+
 $("#submitPostButton").prop("disabled", true);
 
 $("#postTextarea, #replyTextarea").keyup(event => {
@@ -20,6 +26,19 @@ $("#postTextarea, #replyTextarea").keyup(event => {
 })
 
 
+/* ------------------ Notification ----------------- */
+$(document).on("click", ".notification.active", (e) => {
+    const container = $(e.target)
+    const notificationId = container.data().id
+
+    const href = container.attr("href")
+    e.preventDefault()
+
+    const callback = () => window.location = href
+    markNotificationAsOpened(notificationId, callback)
+})
+
+
 // ----------------- Chat Search Box -------------------
 $("#userSearchTextBox").keydown((event) => {
     clearTimeout(timer)
@@ -31,14 +50,14 @@ $("#userSearchTextBox").keydown((event) => {
         selectedUsers.pop()
         updateSelectedUserHtml()
         $(".resultsContainer").html("")
-        
+
         if (selectedUsers.length == 0) {
             $("#createChatButton").prop("disabled", true)
         }
 
         return;
     }
-    
+
     timer = setTimeout(() => {
         value = textBox.val().trim();
 
@@ -305,7 +324,7 @@ $("#coverPhoto").change(function () {
         }
 
         reader.readAsDataURL(this.files[0])
-    } 
+    }
 })
 
 $("#coverPhotoUploadButton").click(() => {
@@ -400,9 +419,10 @@ function getPostIdFromElement(element) {
 }
 
 
+
 function createPostHtml(postData, largeFont = false) {
-    const checkForALoggedInUser = JSON.parse(localStorage.getItem("userLoggedIn"))
-    let userLoggedIn = checkForALoggedInUser != undefined && JSON.parse(localStorage.getItem("userLoggedIn"))
+    // const checkForALoggedInUser = JSON.parse(localStorage.getItem("userLoggedIn"))
+    // let userLoggedIn = checkForALoggedInUser != undefined && JSON.parse(localStorage.getItem("userLoggedIn"))
 
     if (postData == null) return alert("Post object is null!");
     const isRetweet = postData.retweetData !== undefined;
@@ -432,13 +452,6 @@ function createPostHtml(postData, largeFont = false) {
     let replyFlag = "";
     if (postData.replyTo && postData.replyTo._id) {
 
-        if (!postData.replyTo._id) {
-            return alert("Reply to is not populated");
-        }
-        else if (!postData.replyTo.postedBy._id) {
-            return alert("Posted by is not populated");
-        }
-
         let replyToUsername = postData.replyTo.postedBy.username;
         replyFlag = `<div class='replyFlag'>
                         Replying to <a href='/profile/${replyToUsername}'>@${replyToUsername.toLowerCase()}<a>
@@ -455,11 +468,11 @@ function createPostHtml(postData, largeFont = false) {
         let pinClass = "pinPost"
 
         if (postData.pinned === true) {
-           pinnedClass = "active"
-           dataTarget = "#unpinModal"
-           pinClass = "unPinPost"
-          
-           pinnedPostText = `<i class="fa-solid fa-thumbtack">
+            pinnedClass = "active"
+            dataTarget = "#unpinModal"
+            pinClass = "unPinPost"
+
+            pinnedPostText = `<i class="fa-solid fa-thumbtack">
                 <span>Pinned post</span>
            </i>`
         }
@@ -560,7 +573,6 @@ function timeDifference(current, previous) {
     }
 }
 
-
 function outputPosts(results, container) {
     container.html("");
 
@@ -596,10 +608,16 @@ function outputPostsWithReplies(results, container) {
 function outputUsers(data, container) {
     container.html("");
 
-    data.forEach(result => {
-        const html = createUserHtml(result, true)
+    if (data.length == 1) {
+        const html = createUserHtml(data, true)
         container.append(html)
-    })
+    } else {
+        data.forEach(result => {
+            const html = createUserHtml(result, true)
+            container.append(html)
+        })
+    }
+   
 
     if (data.length == 0) {
         container.append(`<span class="noResult">No results found!</span>`)
@@ -609,6 +627,8 @@ function outputUsers(data, container) {
 
 function createUserHtml(userData, showFollowButton) {
     var name = userData.firstName + " " + userData.lastName
+    const checkForALoggedInUser = JSON.parse(localStorage.getItem("userLoggedIn"))
+    let userLoggedIn = checkForALoggedInUser != undefined && JSON.parse(localStorage.getItem("userLoggedIn"))
     var isFollowing = userLoggedIn.following && userLoggedIn.following.includes(userData._id)
     var text = isFollowing ? "following" : "follow"
     var buttonClass = isFollowing ? "followButton following" : "followButton"
@@ -692,7 +712,7 @@ function updateSelectedUserHtml() {
 function getChatName(chatData) {
     let chatName = chatData.chatName;
 
-    if(!chatName) {
+    if (!chatName) {
         const otherChatUsers = getOtherChatUsers(chatData.users);
         const namesArray = otherChatUsers.map(user => user.firstName + " " + user.lastName);
         chatName = namesArray.join(", ")
@@ -706,4 +726,59 @@ function getOtherChatUsers(users) {
     if (users.length == 1) return users
 
     return users.filter(user => user._id != userLoggedIn._id)
+}
+
+
+function messageReceived(newMessage) {
+    if ($(".chatContainer").length == 0) {
+        // Show pop notification
+    } else {
+        addChatMessageHtml(newMessage)
+    }
+
+    refreshMessagesBadge()
+}
+
+
+function markNotificationAsOpened(notificationId = null, callback = null) {
+    if (callback == null) {
+        callback = () => location.reload()
+    }
+
+    const url = notificationId != null ? 
+    `/api/notifications/${notificationId}/markAsOpened` :
+    `/api/notifications/markAsOpened`
+
+    $.ajax({
+        url,
+        type: "PUT",
+        success: callback
+    })
+}
+
+
+function refreshMessagesBadge() {
+    $.get("/api/chats", { unreadOnly: true }, data => {
+
+        const newResults = data.length
+        if (newResults > 0) {
+            $("#messagesBadge").text(newResults).addClass("active")
+        } else {
+            $("#messagesBadge").text("").removeClass("active")
+        }
+    })
+}
+
+
+function refreshNotificationsBadge() {
+    $.get("/api/notifications", { unreadOnly: true }, data => {
+
+        const newResults = data.length
+
+        if (newResults > 0) {
+            $("#notificationBadge").text(newResults).addClass("active")
+        } else {
+            $("#notificationBadge").text("").removeClass("active")
+        }
+    })
 }

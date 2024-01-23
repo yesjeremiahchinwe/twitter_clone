@@ -6,6 +6,7 @@ const UserModel = require("../../model/UserModel")
 const router = express.Router()
 const path = require("path")
 const fs = require("fs")
+const NotificationModel = require("../../model/NotificationModel")
 
 
 router.get("/", (req, res) => {
@@ -48,6 +49,10 @@ router.put("/:userId/follow", async (req, res) => {
         .catch(error => {
             res.sendStatus(400);
         })
+
+    if (!isFollowing) {
+        await NotificationModel.insertNotification(userId, req.session.user._id, "follow", req.session.user._id)
+    }
 
     res.status(200).send(req.session.user);
 })

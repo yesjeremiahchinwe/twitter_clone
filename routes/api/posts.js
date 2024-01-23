@@ -1,11 +1,12 @@
 const express = require("express")
 const PostsModel = require("../../model/PostsModel")
 const UserModel = require("../../model/UserModel")
+const NotificationModel = require("../../model/NotificationModel")
 const router = express.Router()
 
 
 router.get("/", async (req, res) => {
-    const searchObj = req.query;
+    let searchObj = req.query;
 
     if (searchObj.isReply !== undefined) {
         const isReply = searchObj.isReply == "true";
@@ -39,7 +40,7 @@ router.get("/", async (req, res) => {
         delete searchObj.followingOnly;
     }
 
-    const results = await getPosts(searchObj);
+    let results = await getPosts(searchObj);
     res.status(200).send(results);
 })
 
@@ -81,6 +82,11 @@ router.post("/", async (req, res) => {
     PostsModel.create(postData)
         .then(async newPost => {
             newPost = await UserModel.populate(newPost, { path: "postedBy" })
+            newPost = await PostsModel.populate(newPost, { path: "replyTo" })
+
+            if (newPost.replyTo !== undefined) {
+                await NotificationModel.insertNotification(newPost.replyTo.postedBy, req.session.user._id, "reply", newPost._id)
+            }
 
             res.status(201).send(newPost);
         })
@@ -106,6 +112,10 @@ router.put("/:id/like", async (req, res) => {
         const likedPost = await PostsModel.findByIdAndUpdate(postId, {
             [option]: { likes: userId }
         }, { new: true })
+
+        if (!isLiked) {
+            await NotificationModel.insertNotification(likedPost.postedBy, userId, "postLike", likedPost._id)
+        }
 
         req.session.user = userLikedPost
         return res.status(200).send(likedPost)
@@ -141,6 +151,10 @@ router.post("/:id/retweet", async (req, res) => {
             .findByIdAndUpdate(postId, {
                 [option]: { retweetUsers: userId }
             }, { new: true })
+
+        if (!deletedPost) {
+            await NotificationModel.insertNotification(post.postedBy, userId, "retweet", post._id)
+        }
 
         req.session.user = userRetweetPost
         return res.status(201).send(post)
@@ -188,13 +202,12 @@ router.put("/:id", async (req, res) => {
 
 
 async function getPosts(filter) {
-    let results = await PostsModel
-        .find(filter)
-        .populate("postedBy")
-        .populate("retweetData")
-        .populate("replyTo")
-        .sort("-createdAt")
-        .catch(err => err.message)
+    let results = await PostsModel.find(filter)
+    .populate("postedBy")
+    .populate("retweetData")
+    .populate("replyTo")
+    .sort("-createdAt")
+    .catch(err => err.message)
 
     results = await UserModel.populate(results, { path: "replyTo.postedBy" })
     return await UserModel.populate(results, { path: "retweetData.postedBy" })
