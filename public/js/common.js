@@ -493,54 +493,55 @@ function createPostHtml(postData, largeFont = false) {
     }
 
 
-    return `<div class="post ${largeFontClass}" data-id='${postData._id}'>
-                <div class="postActionContainer">
-                    ${retweetText}
-                </div>
+    return `
+    <div class="post ${largeFontClass}" data-id='${postData._id}'>
+        <div class="postActionContainer">
+            ${retweetText}
+        </div>
 
-                <div class="mainContentContainer">
-                    <div class="userImageContainer">
-                        <img src='${postedBy.profilePic.trim()}' alt="User profile"/>
-                    </div>
+        <div class="mainContentContainer">
+            <div class="userImageContainer">
+                <img src='${postedBy.profilePic.trim()}' alt="User profile"/>
+            </div>
 
-                    <div class="postContentContainer">
-                    <div class="pinnedPostText">${pinnedPostText}</div>
-                        <div class="postHeader">
-                            <a href="/profile/${postedBy.username}" class="displayname">${displayName}</a>
-                            <span class="username">@${postedBy.username}</span>
-                            <span class="date">${timestamp}</span>
-                            <div class="buttons">
-                                ${buttons}
-                            </div>
-                        </div>
-                        ${replyFlag}
-                        <div class="postBody">
-                            <span>${postData.content}</span>
-                        </div>
-                        <div class="postFooter">
-                            <div class="postButtonContainer">
-                                <button data-toggle='modal' data-target='#replyModal' class="comment">
-                                    <i class="fa-regular fa-comment"></i>
-                                </button>
-                            </div>
-
-                            <div class="postButtonContainer green">
-                                <button class="retweet ${retweetButtonOnActiveClass}">
-                                    <i class="fa-solid fa-retweet"></i>
-                                    <span>${postData.retweetUsers.length || ""}</span>
-                                </button>
-                            </div>
-
-                            <div class="postButtonContainer red">
-                                <button class="likeButton ${likeButtonOnActiveClass}">
-                                    <i class="fa-regular fa-heart"></i>
-                                    <span>${postData.likes.length || ""}</span>
-                                </button>
-                            </div>
-                        </div>
+            <div class="postContentContainer">
+            <div class="pinnedPostText">${pinnedPostText}</div>
+                <div class="postHeader">
+                    <a href="/profile/${postedBy.username}" class="displayname">${displayName}</a>
+                    <span class="username">@${postedBy.username}</span>
+                    <span class="date">${timestamp}</span>
+                    <div class="buttons">
+                        ${buttons}
                     </div>
                 </div>
-            </div>`
+                ${replyFlag}
+                <div class="postBody">
+                    <span>${postData.content}</span>
+                </div>
+                <div class="postFooter">
+                    <div class="postButtonContainer">
+                        <button data-toggle='modal' data-target='#replyModal' class="comment">
+                            <i class="fa-regular fa-comment"></i>
+                        </button>
+                    </div>
+
+                    <div class="postButtonContainer green">
+                        <button class="retweet ${retweetButtonOnActiveClass}">
+                            <i class="fa-solid fa-retweet"></i>
+                            <span>${postData.retweetUsers.length || ""}</span>
+                        </button>
+                    </div>
+
+                    <div class="postButtonContainer red">
+                        <button class="likeButton ${likeButtonOnActiveClass}">
+                            <i class="fa-regular fa-heart"></i>
+                            <span>${postData.likes.length || ""}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`
 }
 
 function timeDifference(current, previous) {
@@ -623,7 +624,7 @@ function outputUsers(data, container) {
             container.append(html)
         })
     }
-   
+
 
     if (data.length == 0) {
         container.append(`<span class="noResult">No results found!</span>`)
@@ -751,9 +752,9 @@ function markNotificationAsOpened(notificationId = null, callback = null) {
         callback = () => location.reload()
     }
 
-    const url = notificationId != null ? 
-    `/api/notifications/${notificationId}/markAsOpened` :
-    `/api/notifications/markAsOpened`
+    const url = notificationId != null ?
+        `/api/notifications/${notificationId}/markAsOpened` :
+        `/api/notifications/markAsOpened`
 
     $.ajax({
         url,

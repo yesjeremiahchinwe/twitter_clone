@@ -1,7 +1,10 @@
 extends layouts/home-layout.pug
 
 block content
-    .resultsContainer
+    .homePageLoading 
+        img(src="/images/loading_spinner.gif", alt="Loading Spinner")
+
+    .resultsContainer(style="visibility: hidden")
 
 block headerButton
     a(href="/messages/new")

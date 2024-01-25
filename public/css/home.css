@@ -831,6 +831,20 @@ button span {
     max-width: 75px;
 }
 
+.homePageLoading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.homePageLoading img {
+    margin-top: 2rem;
+    width: 30%;
+    max-width: 60px;
+}
+
 .typingDots {
     padding: var(--spacing);
     padding-bottom: 0;

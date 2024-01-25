@@ -3,8 +3,12 @@ extends layouts/home-layout.pug
 block content
     script.
         const postId = '!{postId}'
-    .postsContainer
 
+    .homePageLoading 
+        img(src="/images/loading_spinner.gif", alt="Loading Spinner")
+
+    .postsContainer(style="visibility: hidden")
+        
     +createPostModals(userLoggedIn)
 
 block scripts 

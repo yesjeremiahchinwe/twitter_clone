@@ -12,6 +12,9 @@ $(document).ready(() => {
 function loadPosts() {
     $.get("/api/posts", { postedBy: profileUserId, pinned: true }, postData => {
         outPinnedPost(postData, $(".pinnedPostContainer"))
+
+        $(".homePageLoading").remove()
+        $(".postsContainer").css("visibility", "visible")
     })
 
     $.get("/api/posts", { postedBy: profileUserId, isReply: false }, postData => {

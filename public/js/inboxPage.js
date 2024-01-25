@@ -4,6 +4,9 @@ $(document).ready(() => {
             alert("Could not get chat list")
         } else {
             outPutChatList(data, $(".resultsContainer"))
+
+            $(".homePageLoading").remove()
+            $(".resultsContainer").css("visibility", "visible")
         }
     })
 })

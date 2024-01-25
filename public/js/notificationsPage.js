@@ -1,6 +1,9 @@
 $(document).ready(() => {
     $.get("/api/notifications", (data) => {
         outNotificationList(data, $(".resultsContainer"))
+
+        $(".homePageLoading").remove()
+        $(".resultsContainer").css("visibility", "visible")
     })
 })
 
