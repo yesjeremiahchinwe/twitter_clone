@@ -13,8 +13,8 @@ router.get("/", async (req, res) => {
         .sort("-updatedAt")
         .then(async results => {
 
-            if (req.query.unreadOnly !== undefined && req.query.unreadOnly == true) {
-                results = results.filter(message => !message.latestMessage.readBy.includes(req.session.user._id))
+            if (req.query.unreadOnly !== undefined && req.query.unreadOnly == "true") {
+                results = results.filter(message => message.latestMessage && !message.latestMessage.readBy.includes(req.session.user._id))
             }
 
 
@@ -46,6 +46,16 @@ router.get("/:chatId/messages", async (req, res) => {
         .catch(err => {
             res.sendStatus(400)
         })
+})
+
+
+router.put("/:chatId/messages/markAsRead", async (req, res) => {
+    MessageModel
+        .updateMany({ chat: req.params.chatId }, {
+            $addToSet: { readBy: req.session.user._id }
+        })
+        .then(() => res.sendStatus(204))
+        .catch(() => res.sendStatus(400))
 })
 
 

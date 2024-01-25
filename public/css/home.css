@@ -875,5 +875,20 @@ button span {
     visibility: visible;
 }
 
+#notificationList {
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    width: 350px;
+    background-color: white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.34);
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.34);
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.34)
+}
+
+#notificationList .active {
+    background-color: white;
+}
+
 
 

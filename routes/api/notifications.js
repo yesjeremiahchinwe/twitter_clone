@@ -1,6 +1,4 @@
 const express = require("express")
-const ChatModel = require("../../model/ChatModel")
-const MessageModel = require("../../model/MessageModel")
 const NotificationModel = require("../../model/NotificationModel")
 const router = express.Router()
 
@@ -11,7 +9,7 @@ router.get("/", async (req, res) => {
         notificationType: { $ne: "newMessage" }
     }
 
-    if (req.query.unreadOnly !== undefined && req.query.unreadOnly == true) {
+    if (req.query.unreadOnly !== undefined && req.query.unreadOnly == "true") {
         searchObj.opened = false
     }
 
@@ -26,6 +24,19 @@ router.get("/", async (req, res) => {
 })
 
 
+router.get("/latest", async (req, res) => {
+
+    NotificationModel.findOne({ userTo: req.session.user._id })
+    .populate("userTo")
+    .populate("userFrom")
+    .sort("-createdAt")
+    .then((results) => {
+        res.status(200).send(results)
+    })
+    .catch(() => res.sendStatus(400))
+})
+
+
 router.put("/:id/markAsOpened", async (req, res) => {
     NotificationModel.findByIdAndUpdate(req.params.id, {
         opened: true
@@ -35,6 +46,7 @@ router.put("/:id/markAsOpened", async (req, res) => {
     })
     .catch(() => res.sendStatus(400))
 })
+
 
 router.put("/markAsOpened", async (req, res) => {
     NotificationModel.updateMany({ userTo: req.session.user._id }, {

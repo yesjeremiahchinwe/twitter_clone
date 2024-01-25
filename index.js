@@ -76,6 +76,10 @@ io.on("connection", socket => {
         socket.in(chatId).emit("stop typing")
     })
 
+    socket.on("notification received", (userId) => {
+        socket.in(userId).emit("notification received")
+    })
+
 
     socket.on("new message", newMessage => {
         const chat = newMessage.chat
