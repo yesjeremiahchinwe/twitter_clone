@@ -3,6 +3,7 @@ $(document).ready(() => {
         if (xhr.status == 400) {
             alert("Could not get chat list")
         } else {
+            console.log(data)
             outPutChatList(data, $(".resultsContainer"))
 
             $(".homePageLoading").remove()

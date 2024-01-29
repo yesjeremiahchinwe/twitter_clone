@@ -1,8 +1,8 @@
 $(document).ready(() => {
 
-    console.log(profileUserId)
-    if (selectedTab == "replies") {
+    if (selectedTab === "replies") {
         loadReplies()
+        
     } else {
         loadPosts();
     }
@@ -21,6 +21,7 @@ function loadPosts() {
         outputPosts(postData, $(".postsContainer"))
     })
 }
+
 
 function loadReplies() {
     $.get("/api/posts", { postedBy: profileUserId, isReply: true }, postData => {
