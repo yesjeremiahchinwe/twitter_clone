@@ -1,4 +1,9 @@
+
+
 $(document).ready(() => {
+    $.get("/api/chats", (data, status, xhr) => {
+        localStorage.setItem("listOfChats", JSON.stringify(data))
+    })
 
     if (selectedTab === "replies") {
         loadReplies()

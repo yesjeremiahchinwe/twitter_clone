@@ -1,15 +1,16 @@
 const express = require("express")
 const router = express.Router()
 const UserModel = require("../model/UserModel")
+const MessageModel = require("../model/MessageModel")
 
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
 
     const payload = {
         pageTitle: req.session.user.username,
         userLoggedIn: req.session.user,
         userLoggedInJS: JSON.stringify(req.session.user),
-        profileUser: req.session.user
+        profileUser: req.session.user,
     }
 
     res.status(200).render("profilePage", payload)
@@ -22,7 +23,7 @@ router.get("/:username", async (req, res) => {
         pageTitle: req.session.user.username,
         userLoggedIn: req.session.user,
         userLoggedInJS: JSON.stringify(req.session.user),
-        profileUser: user
+        profileUser: user,
     }
 
     res.status(200).render("profilePage", payload)

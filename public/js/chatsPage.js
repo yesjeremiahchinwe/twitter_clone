@@ -11,7 +11,6 @@ $(document).ready(() => {
     })
     socket.on("stop typing", () => $(".typingDots").hide())
 
-
     $.get(`/api/chats/${chatId}`, (data) => {
         $("#chatName").text(getChatName(data))
     })

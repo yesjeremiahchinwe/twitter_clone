@@ -7,6 +7,7 @@ block content
         script.
             var profileUserId = '!{profileUser._id}'
             var selectedTab = '!{selectedTab}';
+            console.log(activeChat)
 
         - followerCount = profileUser.followers.length
         - followingCount = profileUser.following.length
@@ -28,8 +29,9 @@ block content
                             <i class="fa-solid fa-camera"></i>
 
             .profileButtonContainer 
+                
                 if profileUser._id != userLoggedIn._id
-                    a.profileButton(href=`/messages/65a6a2b38533939fad698c91`)
+                    a.profileButton(href=`/messages`)
                         i.fa-regular.fa-envelope 
                     
                     - var profileUserId = profileUser._id.toString()
