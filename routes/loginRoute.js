@@ -28,18 +28,18 @@ router.post("/", async (req, res) => {
     })
 
     if (!foundUser) {
-        payload.errorMessage = `Invalid username or email`
+        payload.errorMessage = `Invalid Credentials`
         return res.render("login", payload)
     }
 
     try {
-        const comparedPassword = await bcrypt.compare(password, foundUser.password)
+        const comparedPassword = bcrypt.compare(password, foundUser.password)
         if (comparedPassword) {
             req.session.user = foundUser
             return res.redirect("/")
         }
        
-        payload.inValidPassword = "Invalid password"
+        payload.inValidPassword = "Invalid Credentials"
         return res.render("login", payload)
     
     } catch (err) {

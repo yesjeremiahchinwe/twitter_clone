@@ -13,7 +13,8 @@ const postsSchema = new mongoose.Schema({
     },
 
     pinned: {
-        type: Boolean
+        type: Boolean,
+        default: false
     },
 
     likes: [{ 

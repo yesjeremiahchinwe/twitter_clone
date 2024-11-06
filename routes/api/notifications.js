@@ -6,7 +6,7 @@ const router = express.Router()
 router.get("/", async (req, res) => {
     const searchObj = {
         userTo: req.session.user._id,
-        notificationType: { $ne: "newMessage" }
+        notificationType: { $ne: "newMessage" },
     }
 
     if (req.query.unreadOnly !== undefined && req.query.unreadOnly == "true") {

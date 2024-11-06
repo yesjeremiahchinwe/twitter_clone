@@ -17,7 +17,6 @@ router.get("/", async (req, res) => {
                 results = results.filter(message => message.latestMessage && !message.latestMessage.readBy.includes(req.session.user._id))
             }
 
-
             results = await UserModel.populate(results, { path: "latestMessage.sender" })
             res.status(200).send(results)
         })
